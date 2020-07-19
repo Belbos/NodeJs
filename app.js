@@ -2,6 +2,17 @@
 var express = require('express')
 var app = express()
 var bodyParser = require('body-parser')
+var mysql = require('mysql')
+
+var connection = mysql.createConnection({
+    host: 'localhost',
+    port : 3306,
+    user : 'root',
+    passwword : 'asdf1234',
+    database : 'jsman'
+});
+
+connection.connect();
 
 app.listen(3000, function(){
     console.log("Start, ! express server on port 3000 !!")
@@ -41,4 +52,10 @@ app.post('/ajax_send_email', function(req, res){
     var responseData = {'resule': 'ok', 'email' : req.body.email}
     res.json(responseData)
     //res.render('email.ejs', {email:req.body.email} )
+})
+
+app.post("/searchData", function(req, res){
+    console.log(req.body.search)
+    var dummyData = {'name':'이종영', 'age':'27', 'job':'프로그래머'}
+    
 })

@@ -1,32 +1,33 @@
-<!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email form</title>
+    <title> 중간 실습 과제 1</title>
 </head>
 <body>
-    <form action="/email_post" method="post">
-        email : <input type="text" name="email"><br>
-        <input type="submit">
-    </form>
 
-    <button class="ajaxsend">ajaxsend</button>
-
-    <div class="result"></div>
-
-    <script>
+    <div>
+        <input class="search" placeholder="검색어를 입력하세요">
         
-        document.querySelector('.ajaxsend').addEventListener('click', function(){
+        <button class="searchButton">조회</button>
+
+    </div>
+    <h1>검색결과</h1> <br/>
+    <div class="result"></div>
+    
+    <script>
+           
+           document.querySelector('.searchButton').addEventListener('click', function(){
             var inputdata = document.forms[0].elements[0].value;
-            sendAjax('http://localhost:3000/ajax_send_email', inputdata);
+            sendAjax('http://localhost:3000/searchData', inputdata);
         })
 
+        
         function sendAjax(url, data){
 
             console.log(url);
             // Json 방식의 데이터 입력
-            var data = {'email' : data};
+            var data = {'searchData' : data};
             // Json to String 형식 변환 
             data = JSON.stringify(data);
 
@@ -35,7 +36,7 @@
             // 이름은 XML 만 받아 올수 있을 것 처럼 보이나 모든 종류의 데이터를 가지고 올 수 있다.(File, FTP, HTTP 등 프로토콜 지원) 
             // 완전한 양방향 통신을 해야 한다면 웹소켓을 쓰는게 낫다고 한다.
             var xhr = new XMLHttpRequest();
-            
+
             // 통신 방식 선택 
             xhr.open('POST', encodeURI(url));
             // Json 방식으로 보낸거라는걸 Header에 추가
@@ -50,8 +51,8 @@
                 var result = JSON.parse(xhr.responseText);
                 if(result.resule == "ok"){
                     document.querySelector(".result").innerHTML = result.email;
-                }
-            });
+            }
+        });
         }
     </script>
 </body>
