@@ -14,16 +14,16 @@ var router = express.Router();
     password : '1q2w3e4r',
     database : 'nodejs'
 });
-
+  
 connection.connect();
 
 router.get('/', function(req, res){
-    console.log('Join js loaded')
+    console.log('Join js login')
     var msg; 
     var errMsg = req.flash('error')
     if(errMsg) msg = errMsg;
-    res.render('join.ejs', {'message':msg})
-    //res.render('join.ejs')
+    res.render('login.ejs', {'message':msg})
+    
  })
 
  passport.serializeUser(function(user, done){
@@ -37,11 +37,12 @@ router.get('/', function(req, res){
     done(null, id);
  });
 
-passport.use('local-join', new LocalStrategy({
+passport.use('local-login', new LocalStrategy({
         usernameField: 'email',
         passwordField: 'password',
         passReqToCallback : true
     }, function(req, username, password, done) {
+        console.log("Post 까지 왔나?")
         var query = connection.query('SELECT * FROM USER WHERE email = ?', [email], function(err, rows){
              if(err) return done(err);
 
@@ -62,10 +63,25 @@ passport.use('local-join', new LocalStrategy({
     }
 ));
 
-router.post('/', passport.authenticate('local-join', {
+
+router.post('/', function(req, res, next){
+    console.log("Post 까지 성공")
+    passport.authenticate('local-login', function(err, user, info){
+        console.log("local-login 실행이 왜안되는거야?")
+        if(err) res.status(500).json(err);
+        if(!user) return res.status(401).json(info.message)
+
+        req.login(user, function(err){
+            if(err) { return next(err); }
+            return res.json(user);
+        });
+    })
+})
+/*
+router.post('/', passport.authenticate('local-login', {
      successRedirect: '/main',
      failureRedirect: '/join',
      failureFlash: true })
-);
+);*/
   
 module.exports = router ;

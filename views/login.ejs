@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email form</title>
+</head>
+<body>
+    <form action="/email/form" method="post">
+        email : <input type="text" name="email"><br>
+        peaswd : <input type="password" name="password"><br>
+    </form>
+
+    <button class="ajaxsend">login</button>
+
+    <div class="result"></div>
+
+    <script>
+         
+        document.querySelector('.ajaxsend').addEventListener('click', function(){
+            var email = document.getElementsByName('email')[0].value;
+            var password = document.getElementsByName('password')[0].value;
+            sendAjax('http://localhost:3000/login', {'email':email, 'password':password });
+        })
+        function sendAjax(url, data){
+            console.log("실행")
+            // Json to String 형식 변환 
+            data = JSON.stringify(data);
+
+            // WEB API 이다. 기능은 서버와 상호작용 (데이터 송수신)을 하기 위함이다.
+            // 전체 페이지를 새로고침 하지 않아도 데이터를 받아올 수있기 때문에 Json / AJAX 프로그래밍에 사용한다.
+            // 이름은 XML 만 받아 올수 있을 것 처럼 보이나 모든 종류의 데이터를 가지고 올 수 있다.(File, FTP, HTTP 등 프로토콜 지원) 
+            // 완전한 양방향 통신을 해야 한다면 웹소켓을 쓰는게 낫다고 한다.
+            var xhr = new XMLHttpRequest();
+            
+            // 통신 방식 선택 
+            //xhr.open('POST', encodeURI(url));
+            xhr.open('POST', url);
+            // Json 방식으로 보낸거라는걸 Header에 추가
+            xhr.setRequestHeader('Content-Type', "application/json");
+            // 데이터 Send
+            xhr.send(data);
+
+            // Data 받기, 왜 Load  를 쓰는지는 모르겠음
+            // 다시 받을떄 Xhr 이 새로 Load 되나 ?
+            xhr.addEventListener('load', function(){
+                var result = JSON.parse(xhr.responseText);
+                var resultDiv = document.querySelector(".result");
+
+                if(result.result !== "OK") resultDiv.innerHTML = "Your eamil is not found"
+                else resultDiv.innerHTML = result.name;
+                
+            });
+        }
+    </script>
+</body>
+</html>
